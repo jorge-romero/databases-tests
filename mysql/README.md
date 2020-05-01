@@ -20,6 +20,29 @@ bash-4.2$ MYSQL_PWD="$MYSQL_PASSWORD" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQ
 +---+
 bash-4.2$
 ```
+Now we can add it to openshift using the default values that exists in the *Dockerfile*
+
+```sh
+$ oc new-app --name mysql-database \
+  --context-dir="mysql" \
+  --strategy=docker \
+  https://github.com/jorge-romero/databases-tests.git 
+```
 
 
+Or we can add the default values for user, password and database from a secret:
+
+```sh
+$ oc create secret generic mysql-database-secrets \
+  --from-literal MYSQL_USER=usuario \
+  --from-literal MYSQL_PASSWORD=password \
+  --from-literal MYSQL_DATABASE=socksdb
+
+secret/mysql-database-secrets created
+
+$ oc set env dc/mysql-database \
+  --from secret/mysql-database-secrets
+
+deploymentconfig.apps.openshift.io/mydb updated
+```
 
